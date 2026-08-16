@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — Pause. Verify. Decide.</title>
+<meta name="description" content="SIGNAL is an interactive Media & Information Literacy platform where you investigate realistic content and decide what to do next.">
+<meta name="theme-color" content="#0B0D10">
+<meta property="og:title" content="SIGNAL — Pause. Verify. Decide.">
+<meta property="og:description" content="An MIL investigation platform that teaches verification over guessing.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230B0D10'/%3E%3Ctext x='50' y='68' font-size='58' font-family='sans-serif' font-weight='700' fill='%23F2C14E' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     TOP NAV
+════════════════════════════════════════════════════════ -->
+<nav class="top-nav" id="topNav">
+  <div class="nav-brand" id="navBrand">SIG<span>NAL</span></div>
+  <div class="nav-links" id="navLinks">
+    <button class="nav-link" data-nav="investigate">INVESTIGATE</button>
+    <button class="nav-link" data-nav="learn">LEARN</button>
+    <button class="nav-link" data-nav="activity">MY ACTIVITY</button>
+    <button class="nav-link" data-nav="live">LIVE CHECK</button>
+  </div>
+  <div class="nav-right">
+    <button class="nav-icon-btn" id="navNotifBtn" aria-label="Achievements" title="Achievements">
+      <span class="nav-icon">🏆</span>
+      <span class="nav-badge hidden" id="achieveBadge">0</span>
+    </button>
+    <button class="nav-icon-btn" id="navProfileBtn" aria-label="Profile">
+      <span class="nav-icon">◉</span>
+      <span class="nav-label-sm">PROFILE</span>
+    </button>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<!-- Mobile nav drawer -->
+<div class="mobile-nav-overlay hidden" id="mobileNavOverlay"></div>
+<div class="mobile-nav hidden" id="mobileNav">
+  <button class="nav-link" data-nav="investigate">INVESTIGATE</button>
+  <button class="nav-link" data-nav="learn">LEARN</button>
+  <button class="nav-link" data-nav="activity">MY ACTIVITY</button>
+  <button class="nav-link" data-nav="live">LIVE CHECK</button>
+  <button class="nav-link" data-nav="profile">PROFILE</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     INVESTIGATION TOOLBAR (shown only on case screen)
+════════════════════════════════════════════════════════ -->
+<div class="toolkit-bar hidden" id="toolkitBar">
+  <div class="toolkit-brand">SIG<span>NAL</span></div>
+  <div class="toolkit-skills" id="toolkitSkills">
+    <button class="skill-chip" data-skill="SOURCE" data-drawer="source">SOURCE</button>
+    <button class="skill-chip" data-skill="DATE" data-drawer="date">DATE</button>
+    <button class="skill-chip" data-skill="CONTEXT" data-drawer="context">CONTEXT</button>
+    <button class="skill-chip" data-skill="EVIDENCE" data-drawer="evidence">EVIDENCE</button>
+    <button class="skill-chip" data-skill="CORROBORATION" data-drawer="corroboration">CORROBORATE</button>
+    <button class="skill-chip" data-skill="AI AWARENESS" data-drawer="ai">AI AWARE</button>
+  </div>
+  <div class="toolkit-right">
+    <div class="toolkit-progress" id="toolkitProgress">CASE — / 10</div>
+    <div class="toolkit-streak" id="toolkitStreak"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     INVESTIGATION DRAWER
+════════════════════════════════════════════════════════ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="investigationDrawer" aria-hidden="true">
+  <div class="drawer-header">
+    <div class="drawer-title-wrap">
+      <span class="drawer-eyebrow" id="drawerEyebrow">INVESTIGATION</span>
+      <h3 class="drawer-title" id="drawerTitle">Source Analysis</h3>
+    </div>
+    <button class="drawer-close" id="drawerClose" aria-label="Close panel">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════
+     ARTICLE EXPLORER MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="articleOverlay">
+  <div class="modal article-modal">
+    <div class="modal-header">
+      <span class="modal-eyebrow">ORIGINAL SOURCE</span>
+      <button class="drawer-close" id="articleClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="articleBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     REASONING MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="reasoningOverlay">
+  <div class="modal reasoning-modal">
+    <div class="modal-header">
+      <span class="modal-eyebrow">SIGNAL'S REASONING</span>
+      <button class="drawer-close" id="reasoningClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="reasoningBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     LEARN MORE MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="learnOverlay">
+  <div class="modal learn-modal">
+    <div class="modal-header">
+      <span class="modal-eyebrow">MIL EDUCATION</span>
+      <button class="drawer-close" id="learnClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="learnBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     REPORT MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="reportOverlay">
+  <div class="modal report-modal">
+    <div class="modal-header">
+      <span class="modal-eyebrow">REPORT CONTENT</span>
+      <button class="drawer-close" id="reportClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">Why are you reporting this case?</p>
+      <div class="report-options" id="reportOptions">
+        <button class="report-opt" data-reason="Incorrect information">Incorrect information</button>
+        <button class="report-opt" data-reason="Misleading context">Misleading context</button>
+        <button class="report-opt" data-reason="Manipulated media">Manipulated media</button>
+        <button class="report-opt" data-reason="Suspicious source">Suspicious source</button>
+        <button class="report-opt" data-reason="Other">Other</button>
+      </div>
+      <div class="report-confirm hidden" id="reportConfirm">
+        <span class="report-confirm-icon">✓</span>
+        <span id="reportConfirmText">Report submitted. Thank you.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     WHY DID YOU CHOOSE THIS? MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="whyChooseOverlay">
+  <div class="modal why-modal">
+    <div class="modal-header">
+      <span class="modal-eyebrow">REFLECTION</span>
+      <h3 class="drawer-title">Why did you choose this?</h3>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">Select all that apply. Your reasoning will be compared with the evidence.</p>
+      <div class="why-options" id="whyOptions">
+        <label class="why-opt"><input type="checkbox" value="source_suspicious"> The source looks suspicious</label>
+        <label class="why-opt"><input type="checkbox" value="date_unclear"> The date is unclear or missing</label>
+        <label class="why-opt"><input type="checkbox" value="ai_generated"> The image may be AI-generated</label>
+        <label class="why-opt"><input type="checkbox" value="need_evidence"> I need more evidence</label>
+        <label class="why-opt"><input type="checkbox" value="context_misleading"> The context seems misleading</label>
+        <label class="why-opt"><input type="checkbox" value="source_trustworthy"> The source appears trustworthy</label>
+        <label class="why-opt"><input type="checkbox" value="corroborated"> Multiple sources confirm it</label>
+        <label class="why-opt"><input type="checkbox" value="other"> Other</label>
+      </div>
+      <div class="why-comparison hidden" id="whyComparison"></div>
+      <button class="btn btn-primary" id="btnWhyContinue" style="margin-top:20px;">CONTINUE →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ACHIEVEMENT TOAST
+════════════════════════════════════════════════════════ -->
+<div class="achievement-toast hidden" id="achieveToast">
+  <div class="achieve-icon" id="achieveIcon">🏆</div>
+  <div class="achieve-text">
+    <div class="achieve-title" id="achieveTitle">Achievement Unlocked</div>
+    <div class="achieve-desc" id="achieveDesc"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     KEYBOARD SHORTCUT HINT
+════════════════════════════════════════════════════════ -->
+<div class="kb-hint hidden" id="kbHint"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════════════════════ -->
+<main id="app">
+
+  <!-- LANDING -->
+  <section class="screen" id="screen-landing">
+    <div class="landing-wrap">
+      <div class="landing-left">
+        <p class="eyebrow">UNESCO YOUTH HACKATHON 2026 — MIL PLATFORM</p>
+        <h1 class="signal-title">SIGNAL</h1>
+        <p class="signal-tagline">Pause. Verify. Decide.</p>
+        <p class="landing-copy">You don't need to ask <em>"is this real?"</em> You need to ask <em>"how do I know?"</em></p>
+        <p class="landing-copy small">Ten information cases. Investigate the source, the date, the context, the evidence. Understand how the verdict was reached — not just what it is. Sometimes the most honest answer is <strong>I don't know yet.</strong></p>
+        <div class="landing-steps">
+          <div class="landing-step"><span class="step-num">01</span><span class="step-label">PAUSE</span></div>
+          <div class="landing-step-arrow">→</div>
+          <div class="landing-step"><span class="step-num">02</span><span class="step-label">INVESTIGATE</span></div>
+          <div class="landing-step-arrow">→</div>
+          <div class="landing-step"><span class="step-num">03</span><span class="step-label">VERIFY</span></div>
+          <div class="landing-step-arrow">→</div>
+          <div class="landing-step"><span class="step-num">04</span><span class="step-label">UNDERSTAND</span></div>
+          <div class="landing-step-arrow">→</div>
+          <div class="landing-step"><span class="step-num">05</span><span class="step-label">DECIDE</span></div>
+        </div>
+        <div class="landing-stats" id="landingStats"></div>
+        <button class="btn btn-primary" id="btnStart">Open Case File 01 →</button>
+        <div style="margin-top:12px;">
+          <button class="btn btn-outline" id="btnLive">Try Live Signal Check →</button>
+        </div>
+      </div>
+      <aside class="landing-right">
+        <div class="mini-case">
+          <div class="case-title">CASE 01 — SOCIAL MEDIA CLAIM</div>
+          <div class="case-line">"Flooding hitting the city center RIGHT NOW."</div>
+          <div class="case-line"><strong>SOURCE</strong>: ⚠ Unverified</div>
+          <div class="case-line"><strong>DATE</strong>: ⚠ Context unclear</div>
+          <div class="case-line"><strong>EVIDENCE</strong>: ● 3 sources</div>
+          <div style="margin-top:12px"><button class="btn btn-primary" id="btnInvestigateLanding">INVESTIGATE</button></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- LIVE SIGNAL CHECK -->
+  <section class="screen hidden" id="screen-live">
+    <div class="live-wrap">
+      <p class="eyebrow">PRACTICE MODE — LIVE DATA, NOT SCORED</p>
+      <h2 class="dash-title">Live Signal Check</h2>
+      <p class="landing-copy small">Real, current headlines from public news feeds. The point isn't to label anything true or false — it's to practise <strong>checking whether more than one independent outlet is reporting it before you act.</strong></p>
+      <div id="liveStatus" class="live-status">Contacting live feeds…</div>
+      <div id="liveResults" class="live-results"></div>
+      <button class="btn btn-outline" id="btnLiveBack">← Back</button>
+    </div>
+  </section>
+
+  <!-- CASE SCREEN -->
+  <section class="screen hidden" id="screen-case">
+    <div class="case-wrap">
+
+      <!-- Progress bar -->
+      <div class="case-progress-bar">
+        <div class="cpb-track"><div class="cpb-fill" id="cpbFill"></div></div>
+        <div class="cpb-dots" id="cpbDots"></div>
+        <div class="cpb-stats">
+          <span class="cpb-accuracy" id="cpbAccuracy"></span>
+          <span class="cpb-streak" id="cpbStreak"></span>
+        </div>
+      </div>
+
+      <!-- Case header -->
+      <div class="case-header-row">
+        <div class="case-header-left">
+          <span class="case-type-tag" id="caseTypeTag"></span>
+          <span class="case-alert-tag" id="caseAlertTag"></span>
+        </div>
+        <div class="case-header-right">
+          <span class="case-stamp" id="caseStamp"></span>
+        </div>
+      </div>
+
+      <!-- Two-column layout -->
+      <div class="case-layout">
+
+        <!-- LEFT -->
+        <div class="case-main">
+          <div class="case-card" id="caseCard">
+            <div class="case-meta-row" id="caseMeta"></div>
+            <div class="case-source" id="caseSource"></div>
+            <div class="case-content" id="caseContent"></div>
+            <div class="case-status-chips" id="caseStatusChips"></div>
+          </div>
+
+          <div class="case-card-actions">
+            <button class="btn-card-action btn-investigate" id="btnInvestigateAll">
+              <span class="bca-icon">🔍</span> INVESTIGATE
+            </button>
+            <button class="btn-card-action btn-read-story" id="btnReadStory">
+              <span class="bca-icon">📄</span> READ STORY
+            </button>
+            <button class="btn-card-action btn-view-evidence" id="btnViewEvidence">
+              <span class="bca-icon">🗂</span> VIEW EVIDENCE
+            </button>
+          </div>
+
+          <!-- Social actions -->
+          <div class="social-actions" id="caseSocialActions">
+            <button class="social-btn like-btn" id="btnLikeCase" aria-label="Like this case">
+              <span class="social-icon like-icon">♡</span><span class="social-label">Like</span>
+            </button>
+            <button class="social-btn save-btn" id="btnSaveCase" aria-label="Save this case">
+              <span class="social-icon">🔖</span><span class="social-label">Save</span>
+            </button>
+            <button class="social-btn share-btn" id="btnShareCase" aria-label="Share this case">
+              <span class="social-icon">↗</span><span class="social-label">Share</span>
+            </button>
+            <button class="social-btn report-btn" id="btnReportCase" aria-label="Report this case">
+              <span class="social-icon">⚑</span><span class="social-label">Report</span>
+            </button>
+          </div>
+
+          <div class="investigate-block">
+            <p class="block-label">Investigate <span class="kb-hint-inline">— press E to open evidence</span></p>
+            <div class="investigate-options" id="investigateOptions"></div>
+            <div class="evidence-panel" id="evidencePanel" aria-live="polite"></div>
+          </div>
+
+          <div class="decide-block">
+            <p class="block-label">Decide <span class="kb-hint-inline">— 1–6 to choose</span></p>
+            <div class="decide-options" id="decideOptions"></div>
+            <div class="decide-status" id="decideStatus" aria-live="polite"></div>
+          </div>
+
+          <div class="session-log-wrap">
+            <p class="block-label">Your trail this session</p>
+            <div class="session-log" id="sessionLog"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT sidebar -->
+        <aside class="case-sidebar" id="caseSidebar">
+          <div class="sidebar-section">
+            <p class="sidebar-label">SIGNAL ASSESSMENT</p>
+            <div class="confidence-verdict" id="sidebarVerdict">UNVERIFIED</div>
+            <div class="confidence-bar-wrap">
+              <div class="confidence-bar-track">
+                <div class="confidence-bar-fill" id="confBarFill" style="width:0%"></div>
+              </div>
+              <span class="confidence-pct" id="confPct">—</span>
+            </div>
+          </div>
+
+          <div class="sidebar-section" id="sidebarBreakdown">
+            <p class="sidebar-label">EVIDENCE BREAKDOWN</p>
+          </div>
+
+          <div class="sidebar-section">
+            <p class="sidebar-label">INVESTIGATION TOOLS</p>
+            <div class="sidebar-tools" id="sidebarTools"></div>
+          </div>
+
+          <button class="btn-how-know" id="btnHowKnow">
+            <span>SHOW ME HOW YOU KNOW</span>
+            <span class="btn-how-arrow">→</span>
+          </button>
+
+          <div class="sidebar-section" id="communitySigSection" style="display:none">
+            <p class="sidebar-label">COMMUNITY SIGNAL</p>
+            <div class="community-signal" id="communitySignal"></div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK SCREEN -->
+  <section class="screen hidden" id="screen-feedback">
+    <div class="feedback-wrap">
+
+      <div class="feedback-top-row">
+        <div class="feedback-verdict-block">
+          <p class="eyebrow">SIGNAL VERDICT</p>
+          <div class="feedback-verdict" id="feedbackVerdict"></div>
+          <div class="feedback-accuracy" id="feedbackAccuracy"></div>
+        </div>
+        <div class="feedback-decision-block">
+          <p class="sidebar-label">YOUR DECISION</p>
+          <div class="feedback-your-decision" id="feedbackYourDecision"></div>
+        </div>
+      </div>
+
+      <div class="feedback-body-grid">
+        <div class="feedback-col-main">
+          <div class="feedback-noticed" id="feedbackNoticed"></div>
+          <p class="feedback-explanation" id="feedbackExplanation"></p>
+          <div class="feedback-lesson" id="feedbackLesson"></div>
+
+          <!-- Evidence chain -->
+          <div class="feedback-chain" id="feedbackChain"></div>
+        </div>
+
+        <div class="feedback-col-side">
+          <div class="feedback-learn-panel" id="feedbackLearnPanel"></div>
+          <div class="community-signal" id="feedbackCommunity"></div>
+        </div>
+      </div>
+
+      <!-- Social actions on feedback -->
+      <div class="social-actions" id="feedbackSocialActions">
+        <button class="social-btn like-btn" id="btnLikeFb" aria-label="Like">
+          <span class="social-icon like-icon">♡</span><span class="social-label">Like</span>
+        </button>
+        <button class="social-btn save-btn" id="btnSaveFb" aria-label="Save">
+          <span class="social-icon">🔖</span><span class="social-label">Save</span>
+        </button>
+        <button class="social-btn share-btn" id="btnShareFb" aria-label="Share">
+          <span class="social-icon">↗</span><span class="social-label">Share</span>
+        </button>
+        <button class="social-btn" id="btnLearnMoreFb" aria-label="Learn more">
+          <span class="social-icon">📚</span><span class="social-label">Learn More</span>
+        </button>
+      </div>
+
+      <div class="feedback-footer">
+        <button class="btn btn-primary" id="btnNext">Next Case →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="screen hidden" id="screen-dashboard">
+    <div class="dashboard-wrap">
+      <p class="eyebrow">DEBRIEF</p>
+      <h2 class="dash-title">Your MIL Profile</h2>
+      <div class="dash-score" id="dashScore"></div>
+      <div class="dash-metrics" id="dashMetrics"></div>
+      <div class="dash-profile" id="dashProfile"></div>
+      <div class="dash-callouts" id="dashCallouts"></div>
+      <div class="dash-beforeafter" id="dashBeforeAfter"></div>
+      <div class="dash-achievements" id="dashAchievements"></div>
+      <div class="dash-actions">
+        <button class="btn btn-outline" id="btnCreator">Create Your Own Case →</button>
+        <button class="btn btn-outline" id="btnActivity">My Activity →</button>
+        <button class="btn btn-primary" id="btnRestart">Play Again</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MY ACTIVITY -->
+  <section class="screen hidden" id="screen-activity">
+    <div class="dashboard-wrap">
+      <p class="eyebrow">PERSONAL RECORD</p>
+      <h2 class="dash-title">My Activity</h2>
+      <div class="activity-tabs">
+        <button class="activity-tab active" data-tab="saved">Saved Cases</button>
+        <button class="activity-tab" data-tab="liked">Liked Cases</button>
+        <button class="activity-tab" data-tab="history">Investigation History</button>
+        <button class="activity-tab" data-tab="achievements">Achievements</button>
+      </div>
+      <div class="activity-panel" id="activityPanel"></div>
+      <button class="btn btn-outline" id="btnActivityBack" style="margin-top:24px;">← Back</button>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="screen hidden" id="screen-profile">
+    <div class="dashboard-wrap">
+      <p class="eyebrow">VERIFICATION PROFILE</p>
+      <h2 class="dash-title">Your Investigation Record</h2>
+      <p class="landing-copy small" style="margin-bottom:24px;">This is a learning metric only — it reflects your engagement with SIGNAL's cases, not professional fact-checking authority.</p>
+      <div class="profile-stats" id="profileStats"></div>
+      <div class="profile-skills" id="profileSkills"></div>
+      <div class="profile-achievements" id="profileAchievements"></div>
+      <button class="btn btn-outline" id="btnProfileBack" style="margin-top:24px;">← Back</button>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section class="screen hidden" id="screen-learn">
+    <div class="dashboard-wrap">
+      <p class="eyebrow">MIL EDUCATION</p>
+      <h2 class="dash-title">Learn</h2>
+      <p class="landing-copy small">Explore media literacy topics independently. Each guide explains a real verification skill you can use outside SIGNAL.</p>
+      <div class="learn-grid" id="learnGrid"></div>
+      <button class="btn btn-outline" id="btnLearnBack" style="margin-top:24px;">← Back</button>
+    </div>
+  </section>
+
+  <!-- CREATOR MODE -->
+  <section class="screen hidden" id="screen-creator">
+    <div class="creator-wrap">
+      <p class="eyebrow">PLAYER → CREATOR</p>
+      <h2 class="dash-title">Build a MIL Case</h2>
+      <p class="landing-copy small">Prototype only — cases you create stay in this session and preview instantly below.</p>
+      <form id="creatorForm" class="creator-form">
+        <label>Headline / Post text
+          <textarea id="cHeadline" required placeholder="e.g. New scholarship scheme announced for..."></textarea>
+        </label>
+        <label>Claimed source
+          <input id="cSource" required placeholder="e.g. Forwarded message, anonymous account...">
+        </label>
+        <label>What makes it suspicious (or not)?
+          <textarea id="cSuspicious" required placeholder="e.g. No official announcement found anywhere..."></textarea>
+        </label>
+        <label>Correct action
+          <select id="cAction" required>
+            <option value="TRUST">Trust</option>
+            <option value="VERIFY FURTHER">Verify further</option>
+            <option value="IGNORE">Ignore</option>
+            <option value="SHARE">Share</option>
+            <option value="REPORT">Report</option>
+            <option value="UNCERTAIN">Uncertain</option>
+          </select>
+        </label>
+        <label>MIL lesson
+          <input id="cLesson" required placeholder="e.g. Always check for an official source before...">
+        </label>
+        <button class="btn btn-primary" type="submit">Add to Case Library →</button>
+      </form>
+      <div id="creatorPreview" class="creator-preview hidden">
+        <p class="block-label">Preview</p>
+        <div class="case-card">
+          <div class="case-card-top">
+            <span class="case-type-tag">COMMUNITY CASE</span>
+            <span class="case-stamp" id="cPreviewStamp"></span>
+          </div>
+          <div class="case-source" id="cPreviewSource"></div>
+          <div class="case-content" id="cPreviewContent"></div>
+        </div>
+        <p class="feedback-lesson" id="cPreviewLesson"></p>
+        <button class="btn btn-primary hidden" id="btnPlayCustom">Play This Case →</button>
+      </div>
+      <button class="btn btn-outline" id="btnBackDash">← Back to Debrief</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
