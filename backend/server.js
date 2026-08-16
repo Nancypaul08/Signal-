@@ -8,16 +8,36 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 10000;
 
-// Health check
+// ─────────────────────────────────────────────
+// ROOT
+// ─────────────────────────────────────────────
+
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
-    message: "SIGNAL backend is running"
+    message: "SIGNAL backend is running",
+    version: "1.0.0"
   });
 });
 
-// Daily cases API
-app.get("/api/daily-cases", async (req, res) => {
+// ─────────────────────────────────────────────
+// HEALTH CHECK
+// ─────────────────────────────────────────────
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    success: true,
+    status: "healthy",
+    service: "signal-backend",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ─────────────────────────────────────────────
+// DAILY CASES
+// ─────────────────────────────────────────────
+
+app.get("/api/daily-cases", (req, res) => {
   try {
     const cases = [
       {
@@ -29,7 +49,7 @@ app.get("/api/daily-cases", async (req, res) => {
           "A dramatic image claims that flooding is currently affecting the city center.",
         verdict: "VERIFY FURTHER",
         explanation:
-          "The image requires independent verification. Check the original source, date, location and corroborating reports.",
+          "The image requires independent verification. Check the original source, date, location, and corroborating reports.",
         tags: ["image", "breaking", "verification"]
       },
       {
@@ -41,7 +61,7 @@ app.get("/api/daily-cases", async (req, res) => {
           "A widely shared photograph is being presented as evidence of a recent event.",
         verdict: "MISJUDGED",
         explanation:
-          "The photograph may be genuine but the accompanying context can still be misleading. Verify when and where it was originally published.",
+          "The photograph may be genuine, but the accompanying context can still be misleading. Verify when and where it was originally published.",
         tags: ["old-photo", "context", "misinformation"]
       },
       {
@@ -53,7 +73,7 @@ app.get("/api/daily-cases", async (req, res) => {
           "An apparently realistic image is circulating with a claim about a current event.",
         verdict: "MISLEADING",
         explanation:
-          "Visual realism alone is not evidence of authenticity. Look for independent reporting and provenance.",
+          "Visual realism alone is not evidence of authenticity. Look for independent reporting and reliable provenance.",
         tags: ["AI", "image", "deepfake"]
       }
     ];
@@ -65,7 +85,7 @@ app.get("/api/daily-cases", async (req, res) => {
       items: cases
     });
   } catch (error) {
-    console.error("daily-cases error:", error);
+    console.error("Daily cases error:", error);
 
     res.status(500).json({
       success: false,
@@ -74,29 +94,22 @@ app.get("/api/daily-cases", async (req, res) => {
   }
 });
 
-// Simple health endpoint
-app.get("/", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "SIGNAL backend is running"
+// ─────────────────────────────────────────────
+// 404 HANDLER
+// ─────────────────────────────────────────────
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: "Route not found",
+    path: req.originalUrl
   });
 });
 
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    status: "healthy"
-  });
-});
-
-app.get("/api/daily-cases", async (req, res) => {
-  res.json({
-    success: true,
-    items: []
-  });
-});
-const PORT = process.env.PORT || 10000;
+// ─────────────────────────────────────────────
+// START SERVER
+// ─────────────────────────────────────────────
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`SIGNAL backend listening on ${PORT}`);
+  console.log(`SIGNAL backend listening on port ${PORT}`);
 });
