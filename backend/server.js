@@ -75,12 +75,27 @@ app.get("/api/daily-cases", async (req, res) => {
 });
 
 // Simple health endpoint
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "SIGNAL backend is running"
+  });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
     status: "healthy"
   });
 });
+
+app.get("/api/daily-cases", async (req, res) => {
+  res.json({
+    success: true,
+    items: []
+  });
+});
+const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`SIGNAL backend listening on ${PORT}`);
