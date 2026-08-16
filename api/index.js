@@ -6,6 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Root API test
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// Health check
 app.get("/health", (req, res) => {
   res.json({
     success: true,
@@ -21,16 +23,11 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.get("/api/health", (req, res) => {
+// Daily cases
+app.get("/daily-cases", (req, res) => {
   res.json({
     success: true,
-    status: "healthy"
-  });
-});
-
-app.get("/api/daily-cases", (req, res) => {
-  res.json({
-    success: true,
+    updatedAt: new Date().toISOString(),
     count: 3,
     items: [
       {
@@ -73,4 +70,5 @@ app.get("/api/daily-cases", (req, res) => {
   });
 });
 
+// Export for Vercel
 module.exports = app;
