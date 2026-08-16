@@ -550,7 +550,7 @@ const RSS_BRIDGE = "https://api.rss2json.com/v1/api.json?rss_url=";
 // Set this to your deployed backend URL (see /backend/README.md) once it's live,
 // e.g. "https://signal-backend.onrender.com". Left empty, the panel talks
 // directly to the public RSS bridge below — no backend deploy required.
-const LIVE_API_BASE = "http://localhost:3001";
+const LIVE_API_BASE = "https://signal-backend-4d0e.onrender.com";
 const STOPWORDS = new Set(["with","from","that","this","have","will","after","over","into","their","about","what","when","where","which","says","said"]);
 
 function significantWords(title){
